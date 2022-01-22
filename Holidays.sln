@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Holidays.Api", "Holidays.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Holidays.Tests", "Holidays.Tests\Holidays.Tests.csproj", "{7AF84A7A-3671-46E9-90A1-572FB56CA95A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Holidays.SmokeTest", "Holidays.SmokeTest\Holidays.SmokeTest.csproj", "{2488D49D-C014-4922-A776-185FC897C121}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{7AF84A7A-3671-46E9-90A1-572FB56CA95A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AF84A7A-3671-46E9-90A1-572FB56CA95A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AF84A7A-3671-46E9-90A1-572FB56CA95A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2488D49D-C014-4922-A776-185FC897C121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2488D49D-C014-4922-A776-185FC897C121}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2488D49D-C014-4922-A776-185FC897C121}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2488D49D-C014-4922-A776-185FC897C121}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
