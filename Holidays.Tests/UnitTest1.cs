@@ -1,6 +1,7 @@
 using Xunit;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Hosting;
@@ -80,10 +81,18 @@ public class UnitTest1
     [Fact]
     public async Task TestConsecutiveHolidays()
     {
+        var response = await _client.GetAsync("/ConsecutiveHolidays?countryCode=tur&year=2022");
+        response.EnsureSuccessStatusCode();
+        var respText = await response.Content.ReadAsStringAsync();
+        var root = JsonDocument.Parse(respText).RootElement;
+        var count = root.GetProperty("count").GetInt32();
+        Assert.Equal(3, count);
     }
 
     [Fact]
     public async Task TestConsecutiveHolidaysForInvalidCountry()
     {
+        var response = await _client.GetAsync("/ConsecutiveHolidays?countryCode=nope&year=2022");
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 }

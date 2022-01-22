@@ -39,10 +39,10 @@ public class Program {
                 opt.UseInMemoryDatabase("Holidays"));
             services.AddDbContext<StatusContext>(opt => 
                 opt.UseInMemoryDatabase("Holidays"));
+            services.AddDbContext<CountContext>(opt => 
+                opt.UseInMemoryDatabase("Holidays"));
         } else {
             services.AddDbContext<CountryContext>(opt => 
-                opt.UseSqlServer(ConnStr));
-            services.AddDbContext<CountContext>(opt => 
                 opt.UseSqlServer(ConnStr));
             services.AddDbContext<CountContext>(opt => 
                 opt.UseSqlServer(ConnStr));
