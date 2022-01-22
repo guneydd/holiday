@@ -135,4 +135,40 @@ class EnricoService {
 
         return res;
     }
+
+    public async Task<List<Holiday>> GetHolidaysForYear(string code, int year) {
+        var param = new Dictionary<string, string>();
+        param.Add("action", "getHolidaysForYear");
+        param.Add("holidayType", "public_holiday");
+        param.Add("year", year.ToString());
+        param.Add("country", code);
+        var url = QueryHelpers.AddQueryString(BaseUrl, param);
+
+        using(var client = new HttpClient()) {
+            Console.WriteLine("Calling external API");
+            using(var response = await client.GetAsync(url)) {
+                var respText = await response.Content.ReadAsStringAsync();
+                var doc = JsonDocument.Parse(respText);
+                var root = doc.RootElement;
+
+                var res = new List<Holiday>();
+                foreach(var holiday in root.EnumerateArray()) {
+                    Holiday curr = new Holiday();
+
+                    var date = holiday.GetProperty("date");
+                    curr.Country = code;
+                    curr.Year = date.GetProperty("year").GetInt32();
+                    curr.Month = date.GetProperty("month").GetInt32();
+                    curr.Day= date.GetProperty("day").GetInt32();
+
+                    var names = holiday.GetProperty("name");
+                    curr.Name = names[0].GetProperty("text").GetString();
+
+                    res.Add(curr);
+                }
+
+                return res;
+            }
+        }
+    }
 }

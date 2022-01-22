@@ -1,5 +1,6 @@
 using Xunit;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net;
 using System.Text.Json;
@@ -93,6 +94,31 @@ public class UnitTest1
     public async Task TestConsecutiveHolidaysForInvalidCountry()
     {
         var response = await _client.GetAsync("/ConsecutiveHolidays?countryCode=nope&year=2022");
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task TestGroupedHolidays()
+    {
+        var response = await _client.GetAsync("/HolidaysByMonth?countryCode=tur&year=2022");
+        response.EnsureSuccessStatusCode();
+        var respText = await response.Content.ReadAsStringAsync();
+        var root = JsonDocument.Parse(respText).RootElement;
+
+        var may = root.GetProperty("may");
+        var days = new List<int>();
+        foreach(var holiday in may.EnumerateArray()) {
+            days.Add(holiday.GetProperty("day").GetInt32());
+        }
+
+        Assert.Equal(4, days.Count);
+        Assert.Equal(1, days[0]);
+    }
+
+    [Fact]
+    public async Task TestInvalidGroupedHolidays()
+    {
+        var response = await _client.GetAsync("/HolidaysByMonth?countryCode=nope&year=2022");
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 }
