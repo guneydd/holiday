@@ -34,20 +34,46 @@ public class UnitTest1
     }
 
     [Fact]
-    public async Task TestWorkday()
+    public async Task TestWorkDay()
     {
-
+        var response = await _client.GetAsync("/DayStatus?countryCode=svk&year=2022&month=7&day=4");
+        response.EnsureSuccessStatusCode();
+        var respText = await response.Content.ReadAsStringAsync();
+        var root = JsonDocument.Parse(respText).RootElement;
+        var status = root.GetProperty("status").GetString();
+        Assert.Equal("WorkDay", status);
     }
 
     [Fact]
     public async Task TestHoliday()
     {
-        
+        var response = await _client.GetAsync("/DayStatus?countryCode=svk&year=2022&month=7&day=5");
+        response.EnsureSuccessStatusCode();
+        var respText = await response.Content.ReadAsStringAsync();
+        var root = JsonDocument.Parse(respText).RootElement;
+        var status = root.GetProperty("status").GetString();
+        Assert.Equal("Holiday", status);
+    }
+
+    [Fact]
+    public async Task TestFreeDay()
+    {
+        var response = await _client.GetAsync("/DayStatus?countryCode=svk&year=2022&month=7&day=3");
+        response.EnsureSuccessStatusCode();
+        var respText = await response.Content.ReadAsStringAsync();
+        var root = JsonDocument.Parse(respText).RootElement;
+        var status = root.GetProperty("status").GetString();
+        Assert.Equal("FreeDay", status);
     }
 
     [Fact]
     public async Task TestInvalidDay()
     {
-        
+        var response = await _client.GetAsync("/DayStatus?countryCode=nope&year=2022&month=7&day=3");
+        response.EnsureSuccessStatusCode();
+        var respText = await response.Content.ReadAsStringAsync();
+        var root = JsonDocument.Parse(respText).RootElement;
+        var status = root.GetProperty("status").GetString();
+        Assert.Equal("Invalid", status);
     }
 }
