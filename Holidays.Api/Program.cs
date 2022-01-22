@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Configuration;
+using Holidays.Api.Models;
+
 var builder = WebApplication.CreateBuilder(args);
+string connStr = builder.Configuration.GetConnectionString("Database");
 
 // Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(opts => {
@@ -11,6 +15,9 @@ builder.Services.AddControllers().AddJsonOptions(opts => {
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<CountryContext>(opt => 
+    opt.UseSqlServer(connStr));
 
 var app = builder.Build();
 
