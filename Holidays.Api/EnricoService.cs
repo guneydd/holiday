@@ -29,4 +29,55 @@ class EnricoService {
             }
         }
     }
+
+    private async Task<DayStatus.EStatus> GetStatusEnum(string code, int year, int month, int day) {
+        using(var client = new HttpClient()) {
+            string date=$"{day}-{month}-{year}";
+
+            var param = new Dictionary<string, string>();
+            param.Add("action", "isPublicHoliday");
+            param.Add("date", date);
+            param.Add("country", code);
+            var url = QueryHelpers.AddQueryString(BaseUrl, param);
+
+            using(var response = await client.GetAsync(url)) {
+                var respText = await response.Content.ReadAsStringAsync();
+                var root = JsonDocument.Parse(respText).RootElement;
+                try {
+                    bool isHoliday = root.GetProperty("isPublicHoliday").GetBoolean();
+                    if(isHoliday) return DayStatus.EStatus.Holiday;
+                } catch(KeyNotFoundException ex) {
+                    return DayStatus.EStatus.Invalid;
+                }
+            }
+
+            param.Remove("action");
+            param.Add("action", "isWorkDay");
+            url = QueryHelpers.AddQueryString(BaseUrl, param);
+
+            using(var response = await client.GetAsync(url)) {
+                var respText = await response.Content.ReadAsStringAsync();
+                var root = JsonDocument.Parse(respText).RootElement;
+                try {
+                    bool isWorkDay = root.GetProperty("isWorkDay").GetBoolean();
+                    if(isWorkDay) return DayStatus.EStatus.WorkDay;
+                } catch(KeyNotFoundException ex) {
+                    return DayStatus.EStatus.Invalid;
+                }
+            }
+
+            return DayStatus.EStatus.FreeDay;
+        }
+    }
+
+    public async Task<DayStatus> GetDayStatus(string code, int year, int month, int day) {
+        DayStatus res = new DayStatus();
+        res.Country = code;
+        res.Year = year;
+        res.Month = month;
+        res.Day = day;
+        res.Status = await GetStatusEnum(code, year, month, day);
+
+        return res;
+    }
 }

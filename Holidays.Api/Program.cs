@@ -37,8 +37,12 @@ public class Program {
         if(ConnStr == null) {
             services.AddDbContext<CountryContext>(opt => 
                 opt.UseInMemoryDatabase("Holidays"));
+            services.AddDbContext<StatusContext>(opt => 
+                opt.UseInMemoryDatabase("Holidays"));
         } else {
             services.AddDbContext<CountryContext>(opt => 
+                opt.UseSqlServer(ConnStr));
+            services.AddDbContext<StatusContext>(opt => 
                 opt.UseSqlServer(ConnStr));
         }
 

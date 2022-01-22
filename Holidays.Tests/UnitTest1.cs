@@ -32,4 +32,22 @@ public class UnitTest1
         foreach(var c in root.EnumerateArray()) numCountries++;
         Assert.Equal(54, numCountries);
     }
+
+    [Fact]
+    public async Task TestWorkday()
+    {
+
+    }
+
+    [Fact]
+    public async Task TestHoliday()
+    {
+        
+    }
+
+    [Fact]
+    public async Task TestInvalidDay()
+    {
+        
+    }
 }
