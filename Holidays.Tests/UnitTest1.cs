@@ -76,4 +76,14 @@ public class UnitTest1
         var status = root.GetProperty("status").GetString();
         Assert.Equal("Invalid", status);
     }
+
+    [Fact]
+    public async Task TestConsecutiveHolidays()
+    {
+    }
+
+    [Fact]
+    public async Task TestConsecutiveHolidaysForInvalidCountry()
+    {
+    }
 }

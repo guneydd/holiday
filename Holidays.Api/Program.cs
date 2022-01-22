@@ -42,6 +42,10 @@ public class Program {
         } else {
             services.AddDbContext<CountryContext>(opt => 
                 opt.UseSqlServer(ConnStr));
+            services.AddDbContext<CountContext>(opt => 
+                opt.UseSqlServer(ConnStr));
+            services.AddDbContext<CountContext>(opt => 
+                opt.UseSqlServer(ConnStr));
             services.AddDbContext<StatusContext>(opt => 
                 opt.UseSqlServer(ConnStr));
         }
@@ -49,8 +53,6 @@ public class Program {
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-        // WebApplication app = (WebApplication)appb;
-        // Configure the HTTP request pipeline.
         if (env.IsDevelopment())
         {
             app.UseSwagger();

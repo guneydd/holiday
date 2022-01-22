@@ -80,4 +80,59 @@ class EnricoService {
 
         return res;
     }
+
+    private async Task<List<DateTime>> GetHolidayDatesForYear(string code, int year) {
+        var param = new Dictionary<string, string>();
+        param.Add("action", "getHolidaysForYear");
+        param.Add("holidayType", "public_holiday");
+        param.Add("year", year.ToString());
+        param.Add("country", code);
+        var url = QueryHelpers.AddQueryString(BaseUrl, param);
+
+        using(var client = new HttpClient()) {
+            Console.WriteLine("Calling external API");
+            using(var response = await client.GetAsync(url)) {
+                var respText = await response.Content.ReadAsStringAsync();
+                var doc = JsonDocument.Parse(respText);
+                var root = doc.RootElement;
+
+                var dates = new List<DateTime>();
+                foreach(var holiday in root.EnumerateArray()) {
+                    var date = holiday.GetProperty("date");
+                    var y = date.GetProperty("year").GetInt32();
+                    var m = date.GetProperty("month").GetInt32();
+                    var d = date.GetProperty("day").GetInt32();
+
+                    dates.Add(new DateTime(y, m, d));
+                }
+
+                return dates;
+            }
+        }
+    }
+
+    public async Task<HolidaysCount> GetConsecutiveHolidays(string code, int year) {
+        HolidaysCount res = new HolidaysCount();
+        res.Country = code;
+        res.Year = year;
+
+        var holidays = await GetHolidayDatesForYear(code, year);
+        int max = 1;
+        int count = 1;
+        DateTime prev = holidays[0];
+        for(int i=1; i<holidays.Count; i++) {
+            var curr = holidays[i];
+            if(curr.Subtract(prev) <= TimeSpan.FromDays(1.0)) {
+                count++;
+                if(count > max) max = count;
+            } else {
+                count = 1;
+            }
+            prev = curr;
+        }
+
+        res.Count = max;
+
+        return res;
+    }
 }
