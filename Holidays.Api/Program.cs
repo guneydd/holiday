@@ -1,37 +1,61 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Holidays.Api.Models;
 
-var builder = WebApplication.CreateBuilder(args);
-string connStr = builder.Configuration.GetConnectionString("Database");
+namespace Holidays.Api;
 
-// Add services to the container.
-builder.Services.AddControllers().AddJsonOptions(opts => {
-    var enumConverter = new JsonStringEnumConverter();
-    opts.JsonSerializerOptions.Converters.Add(enumConverter);
-});
+public class Program {
+    public string ConnStr { get; set; }
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+    public static void Main(string[] args) {
+        var builder = WebApplication.CreateBuilder(args);
+        var prog = new Program();
 
-builder.Services.AddDbContext<CountryContext>(opt => 
-    opt.UseSqlServer(connStr));
+        prog.ConnStr = builder.Configuration.GetConnectionString("Database");
 
-var app = builder.Build();
+        prog.ConfigureServices(builder.Services);
+        var app = builder.Build();
+        prog.Configure(app, app.Environment);
+        app.Run();
+    }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    public void ConfigureServices(IServiceCollection services) {
+        // Add services to the container.
+        services.AddControllers().AddJsonOptions(opts => {
+            var enumConverter = new JsonStringEnumConverter();
+            opts.JsonSerializerOptions.Converters.Add(enumConverter);
+        });
+
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+
+        if(ConnStr == null) {
+            services.AddDbContext<CountryContext>(opt => 
+                opt.UseInMemoryDatabase("Holidays"));
+        } else {
+            services.AddDbContext<CountryContext>(opt => 
+                opt.UseSqlServer(ConnStr));
+        }
+
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        // WebApplication app = (WebApplication)appb;
+        // Configure the HTTP request pipeline.
+        if (env.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+        app.UseRouting();
+        app.UseEndpoints(endpoints => endpoints.MapControllers());
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
