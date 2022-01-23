@@ -34,7 +34,7 @@ public class Program {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        if(ConnStr == null) {
+        if(ConnStr == null || ConnStr == "") {
             services.AddDbContext<CountryContext>(opt => 
                 opt.UseInMemoryDatabase("Holidays"));
             services.AddDbContext<StatusContext>(opt => 

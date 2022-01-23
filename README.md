@@ -21,3 +21,6 @@ Deployment can be done simply via Heroku. Just create an app, set the database c
 
 # Api docs
 The app can be found deployed on `https://guney-holiday.herokuapp.com` and the api docs are at `https://guney-holiday.herokuapp.com/swagger/index.html`
+
+# Docker
+Navigate to `Holidays.Api` directory, set the db conn str in `appsettings.json`, then build the image as `docker build -t holidays-api .` and run it like `docker run -p 5000:5000 holidays-api`
